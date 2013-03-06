@@ -24,5 +24,6 @@ setup(
     zip_safe=False,
     install_requires=[
         'django-compressor>=1.2',
+        'django-celery>=3.0'
     ],
 )
