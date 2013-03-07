@@ -1,14 +1,11 @@
-from django import template
+import compressor
 from compressor.conf import settings
-from compressor.templatetags.compress import OUTPUT_MODES, \
-    OUTPUT_FILE, OUTPUT_INLINE
 from compressor.templatetags.compress import CompressorNode
 
 from compressor_celery.tasks import render_output_task
-register = template.Library()
 
 
-class CompressorNode(CompressorNode):
+class CompressorCeleryNode(CompressorNode):
 
     # This method is copied from Jannis original code except for the
     # part with celery
@@ -39,31 +36,6 @@ class CompressorNode(CompressorNode):
         # Or don't do anything in production
         return self.get_original_content(context)
 
-
-# The compress function is copied from Jannis original implementation
-@register.tag
-def compress(parser, token):
-    nodelist = parser.parse(('endcompress',))
-    parser.delete_first_token()
-
-    args = token.split_contents()
-
-    if not len(args) in (2, 3, 4):
-        raise template.TemplateSyntaxError(
-            "%r tag requires either one, two or three arguments." % args[0])
-
-    kind = args[1]
-
-    if len(args) >= 3:
-        mode = args[2]
-        if not mode in OUTPUT_MODES:
-            raise template.TemplateSyntaxError(
-                "%r's second argument must be '%s' or '%s'." %
-                (args[0], OUTPUT_FILE, OUTPUT_INLINE))
-    else:
-        mode = OUTPUT_FILE
-    if len(args) == 4:
-        name = args[3]
-    else:
-        name = None
-    return CompressorNode(nodelist, kind, mode, name)
+# Monkeypatch
+compressor.templatetags.compress.CompressorNode = CompressorCeleryNode
+register = compressor.templatetags.compress.register
