@@ -2,7 +2,7 @@ import compressor
 from compressor.conf import settings
 from compressor.templatetags.compress import CompressorNode
 
-from compressor_celery.tasks import render_output_task
+from compressor_celery import tasks
 
 
 class CompressorCeleryNode(CompressorNode):
@@ -31,7 +31,7 @@ class CompressorCeleryNode(CompressorNode):
         else:
             # There is no cache, start celery task
             content = self.get_original_content(context)
-            render_output_task.delay(cache_key, content, kind, mode)
+            tasks.compress.delay(cache_key, content, kind, mode)
 
         # Or don't do anything in production
         return self.get_original_content(context)
