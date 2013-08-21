@@ -1,14 +1,18 @@
+import codecs
 from setuptools import setup, find_packages
+
+def get_long_description():
+    return codecs.open("README.rst", "r", "utf-8").read()
 
 setup(
     name="django_compressor_celery",
-    version="0.1",
+    version="0.2",
     url='http://github.com/jarus/django_compressor_celery/',
     license='MIT',
-    description="",
-    long_description="",
+    description="Integrate django_compressor with celery",
+    long_description=get_long_description(),
     author='Christoph Heer',
-    author_email='christoph.heer@googlemail.com',
+    author_email='christoph@thelabmill.de',
     packages=find_packages(),
     classifiers=[
         'Development Status :: 4 - Beta',
